@@ -6,22 +6,28 @@ const SCREEN_IDS = {
   CONTENT_INFO: 'content-info',
 };
 
+const ASSET_BASE = '/assets';
+
+const HOME_ASSETS = {
+  pageBackground: `${ASSET_BASE}/home-page-1-2.png`,
+  heroHighlight: `${ASSET_BASE}/home-highlights-1-3.svg`,
+  logo: `${ASSET_BASE}/home-logo-1-246.svg`,
+  searchIcon: `${ASSET_BASE}/home-search-icon.svg`,
+  avatar: `${ASSET_BASE}/home-avatar-1-231.png`,
+  actionArrow: `${ASSET_BASE}/home-yellow-icon-1-64.svg`,
+};
+
+const CONTENT_ASSETS = {
+  foreground: `${ASSET_BASE}/content-info-1-539.png`,
+  background: `${ASSET_BASE}/content-info-bg-1-540.png`,
+};
+
 const HOME_SCREEN = {
   id: SCREEN_IDS.HOME,
   title: 'Claro video home',
   initialFocusId: 'nav-home',
   statusPrefix: 'Home',
-  hero: {
-    eyebrow: 'Featured highlights',
-    title: 'Discover stories that feel made for the big screen.',
-    subtitle:
-      'Jump between top navigation, continue watching picks, and live TV channels with the remote.',
-  },
   header: {
-    logo: {
-      primary: 'Claro',
-      secondary: 'video',
-    },
     items: [
       { id: 'nav-home', label: 'Inicio', screenId: SCREEN_IDS.HOME, isActive: true },
       { id: 'nav-movies', label: 'Películas', screenId: SCREEN_IDS.CONTENT_INFO },
@@ -37,32 +43,42 @@ const HOME_SCREEN = {
       {
         id: 'continue-rogue-one',
         title: 'Rogue One',
-        progress: 72,
+        image: `${ASSET_BASE}/home-continue-card-1-40.svg`,
+        progressAsset: null,
+        overlayAsset: null,
         isFeatured: true,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
       {
         id: 'continue-ex-machina',
         title: 'Ex Machina',
-        progress: 64,
+        image: `${ASSET_BASE}/home-continue-card-1-67.svg`,
+        progressAsset: null,
+        overlayAsset: null,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
       {
         id: 'continue-sing-street',
         title: 'Sing Street',
-        progress: 48,
+        image: `${ASSET_BASE}/home-continue-card-1-84.svg`,
+        progressAsset: null,
+        overlayAsset: null,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
       {
         id: 'continue-2012',
         title: '2012',
-        progress: 36,
+        image: `${ASSET_BASE}/home-continue-card-1-101.svg`,
+        progressAsset: null,
+        overlayAsset: null,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
       {
         id: 'continue-ad-astra',
         title: 'Ad Astra',
-        progress: 58,
+        image: `${ASSET_BASE}/home-continue-card-1-118.svg`,
+        progressAsset: null,
+        overlayAsset: null,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
     ],
@@ -75,6 +91,8 @@ const HOME_SCREEN = {
         title: 'Marca Claro Radio',
         metadata: '004 | Claro sports',
         playtime: '11:30 - 12:30',
+        overlayAsset: `${ASSET_BASE}/home-tile-overlay-1-159.svg`,
+        progressAsset: `${ASSET_BASE}/home-progressbar-1-156.svg`,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
       {
@@ -84,6 +102,8 @@ const HOME_SCREEN = {
         playtime: '11:30 - 12:30',
         tag: 'ALQUILÁ',
         isFeatured: true,
+        overlayAsset: `${ASSET_BASE}/home-tile-overlay-1-185.svg`,
+        progressAsset: `${ASSET_BASE}/home-progressbar-1-182.svg`,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
       {
@@ -91,32 +111,12 @@ const HOME_SCREEN = {
         title: 'Marca Claro Radio',
         metadata: '004 | Claro sports',
         playtime: '11:30 - 12:30',
+        overlayAsset: `${ASSET_BASE}/home-tile-overlay-1-220.svg`,
+        progressAsset: `${ASSET_BASE}/home-progressbar-1-224.svg`,
         screenId: SCREEN_IDS.CONTENT_INFO,
       },
     ],
   },
-  utilityActions: [
-    {
-      id: 'header-search',
-      label: 'Search',
-      statusMessage: 'Search is ready. Use the current row to browse categories.',
-    },
-    {
-      id: 'header-profile',
-      label: 'Profile',
-      statusMessage: 'Profile selected. Account switcher would open here.',
-    },
-    {
-      id: 'continue-rogue-one-open',
-      label: 'Open Rogue One',
-      screenId: SCREEN_IDS.CONTENT_INFO,
-    },
-    {
-      id: 'continue-rogue-one-delete',
-      label: 'Delete Rogue One',
-      statusMessage: 'Rogue One removed from Continue Watching.',
-    },
-  ],
 };
 
 const CONTENT_DETAILS = {
@@ -207,6 +207,13 @@ function createFocusTarget({
   };
 }
 
+/**
+ * HomeScreenFocusFlow is the canonical focus-model builder for the Home screen.
+ * Inputs: static home screen metadata declared in HOME_SCREEN.
+ * Outputs: ordered focus target objects consumed by the D-pad navigation layer.
+ * Errors: none expected; this is deterministic in-memory mapping.
+ * Side effects: none.
+ */
 function buildHomeFocusTargets() {
   const headerTargets = [
     createFocusTarget({
@@ -458,14 +465,21 @@ function getContentActionClass(action, isFocused) {
 function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
   return (
     <main className="tv-app tv-screen home-page-screen" aria-label="OTT home page">
-      <div className="home-page-screen__hero home-page-screen__hero--backdrop" aria-hidden="true">
-        <div className="home-page-screen__hero-gradient" />
-      </div>
+      <img
+        className="home-page-screen__bg"
+        src={HOME_ASSETS.pageBackground}
+        alt=""
+        aria-hidden="true"
+      />
+      <img
+        className="home-page-screen__hero"
+        src={HOME_ASSETS.heroHighlight}
+        alt="Featured highlights"
+      />
 
       <header className="home-header" aria-label="Top navigation">
         <div className="home-header__logo" aria-label="Claro video logo">
-          <span className="home-header__logo-claro">{HOME_SCREEN.header.logo.primary}</span>
-          <span className="home-header__logo-video">{HOME_SCREEN.header.logo.secondary}</span>
+          <img src={HOME_ASSETS.logo} alt="Claro video" className="home-header__logo-image" />
         </div>
 
         <div className="home-header__nav-shell">
@@ -483,7 +497,12 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
             onClick={() => onActivateTarget('header-search')}
             aria-label="Search"
           >
-            <span className="home-header__search-icon" aria-hidden="true" />
+            <img
+              src={HOME_ASSETS.searchIcon}
+              alt=""
+              aria-hidden="true"
+              className="home-header__search-image"
+            />
           </button>
 
           {HOME_SCREEN.header.items.map((item) => (
@@ -513,20 +532,15 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
             aria-label="Profile"
           >
             <span className="home-header__profile-ring" aria-hidden="true" />
-            <span className="home-header__profile-avatar" aria-hidden="true">
-              CV
-            </span>
+            <img
+              className="home-header__profile-avatar-image"
+              src={HOME_ASSETS.avatar}
+              alt=""
+              aria-hidden="true"
+            />
           </button>
         </div>
       </header>
-
-      <section className="home-page-screen__hero-copy" aria-labelledby="home-hero-title">
-        <div className="home-page-screen__hero-eyebrow">{HOME_SCREEN.hero.eyebrow}</div>
-        <h1 id="home-hero-title" className="home-page-screen__hero-title">
-          {HOME_SCREEN.hero.title}
-        </h1>
-        <p className="home-page-screen__hero-subtitle">{HOME_SCREEN.hero.subtitle}</p>
-      </section>
 
       <section className="continue-row" aria-labelledby="continue-title">
         <h2 id="continue-title" className="continue-row__title">
@@ -546,38 +560,17 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
                   onClick={() => onActivateTarget(item.id)}
                   aria-label={item.title}
                 >
-                  <div
+                  <img
                     className={[
                       'continue-card__poster',
                       item.isFeatured ? 'continue-card__poster--featured' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')}
+                    src={item.image}
+                    alt=""
                     aria-hidden="true"
                   />
-                  <div
-                    className={[
-                      'continue-card__progress',
-                      item.isFeatured ? 'continue-card__progress--featured' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  >
-                    <span
-                      className="continue-card__progress-fill"
-                      style={{ width: `${item.progress}%` }}
-                    />
-                  </div>
-                  <div
-                    className={[
-                      'continue-card__label',
-                      item.isFeatured ? 'continue-card__label--featured' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  >
-                    <span>{item.title}</span>
-                  </div>
                 </button>
 
                 {item.isFeatured ? (
@@ -595,7 +588,7 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
                       onClick={() => onActivateTarget('continue-rogue-one-open')}
                       aria-label="Open Rogue One"
                     >
-                      →
+                      <img src={HOME_ASSETS.actionArrow} alt="" aria-hidden="true" />
                     </button>
                     <button
                       type="button"
@@ -610,7 +603,7 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
                       onClick={() => onActivateTarget('continue-rogue-one-delete')}
                       aria-label="Delete Rogue One"
                     >
-                      🗑
+                      ×
                     </button>
                   </>
                 ) : null}
@@ -644,13 +637,15 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
               onClick={() => onActivateTarget(item.id)}
               aria-label={item.title}
             >
-              <div
+              <img
                 className={[
-                  'channel-card__image',
-                  item.isFeatured ? 'channel-card__image--large' : '',
+                  'channel-card__overlay',
+                  item.isFeatured ? 'channel-card__overlay--featured' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
+                src={item.overlayAsset}
+                alt=""
                 aria-hidden="true"
               />
               <div
@@ -666,29 +661,17 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
                 <div className="channel-card__playtime">{item.playtime}</div>
               </div>
               {item.tag ? <div className="channel-card__rent-tag">{item.tag}</div> : null}
-              <div
+              <img
                 className={[
                   'channel-card__progress-svg',
                   item.isFeatured ? 'channel-card__progress-svg--featured' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
+                src={item.progressAsset}
+                alt=""
                 aria-hidden="true"
-              >
-                <span className="channel-card__progress-fill" />
-              </div>
-              <div
-                className={[
-                  'channel-card__play',
-                  item.isFeatured ? 'channel-card__play--featured' : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                aria-hidden="true"
-              >
-                <span className="channel-card__play-circle" />
-                <span className="channel-card__play-icon" />
-              </div>
+              />
             </button>
           ))}
         </div>
@@ -700,8 +683,17 @@ function HomeScreen({ focusedTargetId, onFocusTarget, onActivateTarget }) {
 function ContentInfoScreen({ focusedTargetId, onFocusTarget, onActivateTarget, clock }) {
   return (
     <main className="tv-app tv-screen content-info-screen" aria-label="OTT content details screen">
-      <div className="content-info-screen__bg" aria-hidden="true" />
-      <div className="content-info-screen__overlay" aria-hidden="true" />
+      <img
+        className="content-info-screen__backdrop"
+        src={CONTENT_ASSETS.background}
+        alt=""
+        aria-hidden="true"
+      />
+      <img
+        className="content-info-screen__foreground"
+        src={CONTENT_ASSETS.foreground}
+        alt="Featured content backdrop"
+      />
 
       <section className="content-info-screen__panel" aria-labelledby="content-title">
         <div className="content-info-screen__header">
